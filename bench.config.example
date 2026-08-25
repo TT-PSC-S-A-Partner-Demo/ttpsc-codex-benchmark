@@ -1,0 +1,61 @@
+# bench.config — copy to bench.config, or let `bash bench/init.sh <repo>` write it.
+#
+# Format: KEY=value, one per line. No quotes, no spaces around '='. Parsed, not
+# sourced, so a value like `test_cmd=pytest -q` needs no escaping.
+#
+# Every key can be overridden for a single run via the environment:
+#   BENCH_TEST_CMD="pytest -q -k guard" bash bench/run-end.sh
+
+
+# Repo the runs happen in. Absolute, or relative to the kit root.
+# On Windows use forward slashes: C:/path/to/repo
+work=
+
+# Git tag every run resets to before the agent starts. init.sh creates it.
+# Pick a name you do not use elsewhere — init.sh force-moves it.
+baseline_tag=bench-start
+
+# Command whose EXIT CODE decides green/red. Run from `work`.
+test_cmd=
+
+# Optional per-test counts for the Tests column. Two shapes:
+#   plain string  -> counted by occurrence   (Go prints "--- PASS" once per test)
+#   regex with () -> the capture group IS the count  (pytest prints "3 passed")
+# Leave both empty and the row reports the exit code instead — always correct,
+# just less detailed.
+pass_pattern=
+fail_pattern=
+
+
+# --- Presets ---------------------------------------------------------------
+# Uncomment the block matching your stack. These are what init.sh writes.
+#
+# Go
+#   test_cmd=go test ./... -count=1 -v
+#   pass_pattern=--- PASS
+#   fail_pattern=--- FAIL
+#
+# Python / pytest
+#   test_cmd=pytest -q
+#   pass_pattern=([0-9]+) passed
+#   fail_pattern=([0-9]+) failed
+#
+# Rust
+#   test_cmd=cargo test
+#   pass_pattern=([0-9]+) passed
+#   fail_pattern=([0-9]+) failed
+#
+# Node
+#   test_cmd=npm test --silent
+#
+# .NET
+#   test_cmd=dotnet test
+#
+# Maven
+#   test_cmd=mvn -q test
+#
+# Gradle
+#   test_cmd=gradle test
+#
+# Anything else
+#   test_cmd=make test
